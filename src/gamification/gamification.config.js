@@ -1,7 +1,7 @@
 // Configuración editable del sistema de gamificación.
 // Los módulos del motor solo definen cómo interpretar estos datos.
 const gamificationConfig = {
-  persistencia: { claveUsuario: 'gamification-user-v3' },
+  persistencia: { claveUsuario: 'gamification-user-v3', versionEsquema: 1, claveTemporada: 'gamification-season-v1' },
   calendario: {
     zonaHoraria: 'America/Guayaquil',
     milisegundosPorDia: 86400000,
@@ -18,13 +18,28 @@ const gamificationConfig = {
   errores: {
     idRequerido: 'Se requiere un identificador de usuario.',
     tipoEventoRequerido: 'El evento debe indicar su tipo.',
+    monedasInsuficientes: 'No hay saldo suficiente para esa operación.',
+    operacionMonedasInvalida: 'La moneda o la cantidad indicada no son válidas.',
+    misionNoDisponible: 'La misión no está completa o ya fue reclamada.',
   },
   eventos: {
     xp: 'xp-ganado',
     rueda: 'rueda-jugada',
     corona: 'corona-ganada',
     actividadDiaria: 'dia-activo',
+    respuestaCorrecta: 'respuesta-correcta',
+    preguntaRespondida: 'pregunta-respondida',
+    partidaCompletada: 'partida-completada',
+    monedaGanada: 'moneda-ganada',
+    monedaGastada: 'moneda-gastada',
+    misionReclamada: 'mision-reclamada',
   },
+  monedas: [{ id: 'gemas', nombre: 'Gemas', icono: '💎', color: '#5bc7d5' }],
+  niveles: [
+    { id: 'nivel-1', nombre: 'Aprendiz', nivel: 1, minXP: 0, maxXP: 249 },
+    { id: 'nivel-2', nombre: 'Pensador', nivel: 2, minXP: 250, maxXP: 749 },
+    { id: 'nivel-3', nombre: 'Filósofo', nivel: 3, minXP: 750, maxXP: null },
+  ],
   // maxXP es inclusivo; usa null para la última liga sin techo.
   ligas: [
     { id: 'bronce', nombre: 'Bronce', copa: '🥉', minXP: 0, maxXP: 999, color: '#b87333' },
@@ -39,6 +54,13 @@ const gamificationConfig = {
     { id: 'ruleta-10', nombre: 'Viajero de la ruleta', icono: '🎡', descripcion: 'Repite una acción la cantidad indicada de veces.', tipo: 'por-repeticion', parametro: { accion: 'jugar-rueda', vecesNecesarias: 10 } },
     { id: 'mejor-dia-500', nombre: 'Día brillante', icono: '☀️', descripcion: 'Alcanza la meta diaria de XP.', tipo: 'por-xp-dia', parametro: { xpMinimoEnUnDia: 500 } },
   ],
+  misiones: [
+    { id: 'primeras-ideas', nombre: 'Primeras ideas', descripcion: 'Responde correctamente a preguntas.', categoria: 'progreso', objetivo: { tipo: 'conteo-eventos', eventoKey: 'respuestaCorrecta', cantidadNecesaria: 3 }, recompensas: [{ tipo: 'xp', cantidad: 50 }, { tipo: 'moneda', monedaId: 'gemas', cantidad: 10 }] },
+    { id: 'gira-la-ruleta', nombre: 'Explora la ruleta', descripcion: 'Juega varias ruedas.', categoria: 'progreso', objetivo: { tipo: 'conteo-eventos', eventoKey: 'rueda', cantidadNecesaria: 5 }, recompensas: [{ tipo: 'xp', cantidad: 75 }] },
+    { id: 'coleccionista', nombre: 'Coleccionista de temas', descripcion: 'Gana coronas en distintos temas.', categoria: 'progreso', objetivo: { tipo: 'coronas', cantidadNecesaria: 3 }, recompensas: [{ tipo: 'moneda', monedaId: 'gemas', cantidad: 15 }] },
+  ],
+  temporada: { id: 'temporada-inicial', nombre: 'Temporada de ideas', fechaInicio: '2026-01-01T00:00:00.000Z', fechaFin: null, reinicio: 'manual' },
+  recompensas: { limiteEventosGuardados: 5000, idPrefijoGenerado: 'gam-' },
   trajes: [
     { id: 'toga', nombre: 'Toga clásica', imagen: '🏛️', seDesbloqueaCon: 'liga-bronce', costoGemas: 0 },
     { id: 'laureles', nombre: 'Laureles', imagen: '🌿', seDesbloqueaCon: 'badge-nocturno', costoGemas: 0 },
@@ -57,12 +79,24 @@ const gamificationConfig = {
   ],
   interfaz: {
     tituloTrajes: 'Trajes de avatar',
-    tituloTrajes: 'Trajes de avatar',
     seleccionar: 'Seleccionar',
     seleccionado: 'Seleccionado',
     bloqueado: 'Bloqueado',
     desbloqueaCon: 'Se desbloquea con',
     costoGemas: 'Gemas',
+    nivel: 'Nivel',
+    xp: 'XP',
+    saldo: 'Saldo',
+    racha: 'Racha actual',
+    dias: 'días',
+    misiones: 'Misiones',
+    reclamar: 'Reclamar recompensa',
+    reclamada: 'Recompensa reclamada',
+    progreso: 'Progreso',
+    mascotas: 'Colección de mascotas',
+    insignias: 'Insignias',
+    perfil: 'Perfil de jugador',
+    temporada: 'Temporada',
   },
 };
 

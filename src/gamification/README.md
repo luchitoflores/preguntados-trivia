@@ -1,35 +1,54 @@
 # Framework de gamificación
 
-El framework es independiente de la interfaz y funciona en JavaScript. Los nombres, umbrales, ligas, insignias, trajes, mascotas, eventos, reglas de desbloqueo, textos y calendario editables están en `gamification.config.js`.
+Paquete JavaScript independiente del juego Preguntados. Incluye reglas por configuración, motor de eventos, progresión, estadísticas derivadas, ligas, insignias, rachas, misiones, monedas, temporada local, trajes y colección de mascotas. No requiere servidor ni APIs externas.
 
-## Inicio y eventos
+## Vistas de componentes
+
+La galería funcional se publica junto al juego en `https://luchitoflores.github.io/preguntados-trivia/gamification-demo.html`. Cada vista se puede importar por separado desde `src/gamification/ui/index.js`: perfil, barra de XP, liga, racha, monedero, avatar, insignias, misiones, colección de mascotas, temporada y notificación de recompensa. Los componentes reciben `user`, `config` y callbacks; no conocen las rutas ni el estado de una aplicación concreta. Los estilos base están aislados en `ui/demo.css` y la aplicación anfitriona puede sustituirlos.
+
+La página de demostración usa `gamification-demo-user-v1`, guarda en el dispositivo y no cambia el almacenamiento de la partida. Los botones generan eventos del motor y actualizan todas las vistas. La galería no se añade al menú ni al flujo del juego.
+
+## Inicio
 
 ```js
-import { crearMotor } from './gamification/index.js';
+import { crearMotor, gamificationConfig } from './gamification/index.js';
 
-const gamification = crearMotor();
-let user = gamification.crearUsuario({ id: 'user-001', nombre: 'Ada' });
-
-user = gamification.procesarEvento(user, {
-  tipo: gamification.config.eventos.rueda,
+const motor = crearMotor(gamificationConfig);
+let usuario = motor.crearUsuario({ id: 'usuario-1', nombre: 'Ada' });
+usuario = motor.procesarEvento(usuario, {
+  id: 'partida-1-giro-1',
+  tipo: motor.config.eventos.rueda,
   rueda: 'caverna',
   accion: 'jugar-rueda',
   timestamp: new Date().toISOString(),
 });
-user = gamification.procesarEvento(user, {
-  tipo: gamification.config.eventos.xp,
-  cantidad: 25,
-  timestamp: new Date().toISOString(),
-});
-gamification.guardarUsuario(user);
+usuario = motor.agregarXP(usuario, 25, { id: 'partida-1-xp-1' });
+motor.guardarUsuario(usuario);
 ```
 
-Para una corona se usa `config.eventos.corona` y se envían `rueda` o `tema`. La racha se deriva de los días de los eventos reconocidos. Las estadísticas se reconstruyen desde `user.eventos`; `vecesPorHorario`, `vecesPorRueda`, XP diaria, mejor día y coronas no se editan a mano.
+Cada evento debe tener ID estable cuando el anfitrión pueda reintentarlo. El motor ignora IDs ya procesados para evitar XP, monedas o estadísticas duplicadas. El historial local es la fuente de verdad; estadísticas, progreso y saldos se derivan de ese historial.
 
-## Interfaz de avatar
+## Configuración y extensibilidad
 
-`AvatarPicker` itera `config.trajes`, comprueba `seDesbloqueaCon`, persiste el cambio con la clave de `config.persistencia.claveUsuario` y entrega el usuario actualizado por `onChange`. Acepta imágenes mediante una ruta o URL, y texto/emoji como alternativa. `listarMascotas` expone la colección sin poderes.
+Edita `gamification.config.js` para cambiar niveles, ligas, insignias, objetivos de misión, premios, temporada, monedas, trajes, mascotas, desbloqueos, textos, calendario y límites. Los tipos de condición de badges y los objetivos de misión son mecánicas del motor; sus umbrales y contenidos son datos. Usa `config.eventos` como catálogo de tipos de evento. Para nuevas reglas de dominio, añade un evaluador genérico reutilizable en su módulo, sin acoplarlo a una aplicación.
 
-## Portabilidad
+Los trajes y mascotas se generan recorriendo configuración. Las mascotas son coleccionables sin poderes. El coste de traje se expone como dato; la compra debe ser llamada explícitamente por la aplicación anfitriona mediante el módulo monedero y su propio flujo de confirmación.
 
-Se puede crear una configuración propia y pasarla a `crearMotor(config)`, a `AvatarPicker` y a las funciones de catálogo. Para cambiar reglas de juego, edita la configuración; para cambiar una mecánica nueva que no figure entre los tipos documentados, agrega su evaluador correspondiente al módulo del motor.
+## Persistencia y temporadas
+
+`crearAdaptadorLocal()` usa localStorage; `crearAdaptadorMemoria()` sirve para pruebas, SSR o una aplicación que administre su estado en memoria. `crearMotor(config)` acepta configuración personalizada. Carga y guardado reciben un objeto compatible con Web Storage. `migrarUsuario` y `migrarTemporada` permiten registrar funciones de migración por versión sin acoplar el paquete a un proveedor externo.
+
+La temporada y los usuarios guardados por esta versión permanecen en el dispositivo. Las clasificaciones entre dispositivos, sincronización, autenticación, pagos y protección antitrampa requieren después un servicio externo; no forman parte de este paquete offline.
+
+## Componentes React
+
+```jsx
+import { ProfileCard, XPProgress, BadgeGallery, MissionBoard } from './gamification/ui/index.js';
+
+<ProfileCard user={usuario} config={config} />
+<XPProgress user={usuario} config={config} />
+<BadgeGallery user={usuario} config={config} />
+<MissionBoard user={usuario} config={config} onClaim={reclamar} />
+```
+
+Se puede importar solo la API del motor desde `index.js` o solo los componentes React desde `ui/index.js`. La capa visual es opcional; una app puede presentar los datos con su propia interfaz.

@@ -5,7 +5,6 @@ export function calcularRacha(diasActivos = [], referencia = new Date(), config 
   const active = new Set(diasActivos);
   if (!active.size) return { actual: config.limites.diasMinimo, mejor: config.limites.diasMinimo };
   const today = fechaLocal(referencia, config);
-  const midnight = new Date(`${today}T00:00:00.000Z`).getTime();
   const dayMs = config.calendario.milisegundosPorDia;
   const activeDays = [...active].map(day => Math.floor(Date.parse(`${day}T00:00:00.000Z`) / dayMs)).sort((a, b) => a - b);
   let best = config.valores.incremento;
@@ -14,7 +13,7 @@ export function calcularRacha(diasActivos = [], referencia = new Date(), config 
     run = activeDays[index] - activeDays[index - config.calendario.pasos] === config.calendario.diferenciasDiasConsecutivos ? run + config.valores.incremento : config.valores.incremento;
     best = Math.max(best, run);
   }
-  const currentDay = Math.floor(midnight / dayMs);
+  const currentDay = Math.floor(Date.parse(`${today}T00:00:00.000Z`) / dayMs);
   const lastDay = activeDays[activeDays.length - config.valores.incremento];
   const isRecent = currentDay - lastDay <= config.calendario.toleranciaDiasInactivos;
   if (!isRecent) return { actual: config.limites.diasMinimo, mejor: best };
