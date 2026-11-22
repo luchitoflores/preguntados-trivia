@@ -1,1 +1,26 @@
-# preguntados-trivia
+# Preguntas Filosofía - Ruleta
+
+Aplicación independiente de trivia filosófica construida con React, Vite y JavaScript. Conserva el motor de ruleta existente y añade un esquema común para preguntas con recursos multimedia y un editor local.
+
+## Desarrollo
+
+```bash
+npm install
+npm run dev
+```
+
+## GitHub Pages
+
+El flujo de trabajo publica `dist` en cada push a `main`. Habilita Pages en Settings → Pages → GitHub Actions.
+
+Enlace previsto: https://mi-usuario.github.io/mi-repo/
+
+## APK
+
+Cada push a `main` ejecuta la compilación Android. Ve a Actions → último run → Artifacts → `app-apk` para descargar el APK de depuración.
+
+## Contenido del juego
+
+Las preguntas del framework se pueden importar o exportar como JSON. Las preguntas creadas en el editor se guardan localmente en el navegador y los medios se almacenan como base64 en el mismo dispositivo.
+
+Modo admin disponible bajo solicitud.
