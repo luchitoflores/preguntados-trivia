@@ -34,7 +34,7 @@ export function procesarEvento(user, event, config = defaultConfig) {
   if (!event?.tipo) throw new Error(config.errores.tipoEventoRequerido);
   const timestamp = event.timestamp || new Date().toISOString();
   const id = event.id || `${config.recompensas.idPrefijoGenerado}${event.tipo}-${timestamp}-${(user.eventos || []).length}`;
-  if ((user.eventos || []).some(item => item.id === id)) return { ...user, badgesNuevos: [], eventoDuplicado: true };
+  if ((user.eventos || []).some(item => item.id === id)) return user;
   const normalized = { ...event, id, timestamp };
   const currencyAmount = Number(normalized.cantidad);
   if ([config.eventos.monedaGanada, config.eventos.monedaGastada].includes(normalized.tipo)

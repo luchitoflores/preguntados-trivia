@@ -4,7 +4,6 @@ import configBase from '../gamification.config.js';
 import { crearMotor } from '../engine.js';
 import { reclamarMision } from '../missions.js';
 import { seleccionarMascota } from '../pets.js';
-import { seleccionarTraje } from '../avatar.js';
 import { crearAdaptadorLocal } from '../storage.js';
 import { ProfileCard, XPProgress, LeagueCard, StreakCard, WalletCard, BadgeGallery, MissionBoard, PetCollection, SeasonCard, AvatarPicker, RewardToast } from '../ui/index.js';
 import '../ui/demo.css';
