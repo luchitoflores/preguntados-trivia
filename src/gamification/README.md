@@ -4,14 +4,14 @@ Paquete JavaScript independiente del juego Preguntados. Incluye reglas por confi
 
 ## Vistas de componentes
 
-La galería funcional se publica junto al juego en `https://luchitoflores.github.io/preguntados-trivia/gamification-demo.html`. Cada vista se puede importar por separado desde `src/gamification/ui/index.js`: perfil, barra de XP, liga, racha, monedero, avatar, insignias, misiones, colección de mascotas, temporada y notificación de recompensa. Los componentes reciben `user`, `config` y callbacks; no conocen las rutas ni el estado de una aplicación concreta. Los estilos base están aislados en `ui/demo.css` y la aplicación anfitriona puede sustituirlos.
+El playground se publica junto al juego en `https://luchitoflores.github.io/preguntados-trivia/playground/`. La página antigua `/gamification-demo.html` redirige allí. Los controles de configuración y simulación viven en `playground/` y envían eventos al motor; no implementan reglas de recompensas.
 
-La página de demostración usa `gamification-demo-user-v1`, guarda en el dispositivo y no cambia el almacenamiento de la partida. Los botones generan eventos del motor y actualizan todas las vistas. La galería no se añade al menú ni al flujo del juego.
+La página de prueba usa una clave local independiente, guarda sus parámetros/progreso en el dispositivo y no cambia el almacenamiento de la partida. El diseño es una sola vista vertical con panel de parámetros, simulador y resultados en vivo; no se añade al menú ni al flujo del juego.
 
 ## Inicio
 
 ```js
-import { crearMotor, gamificationConfig } from './gamification/index.js';
+import { crearMotor, gamificationConfig } from './src/gamification/index.js';
 
 const motor = crearMotor(gamificationConfig);
 let usuario = motor.crearUsuario({ id: 'usuario-1', nombre: 'Ada' });
@@ -40,10 +40,10 @@ Los trajes y mascotas se generan recorriendo configuración. Las mascotas son co
 
 La temporada y los usuarios guardados por esta versión permanecen en el dispositivo. Las clasificaciones entre dispositivos, sincronización, autenticación, pagos y protección antitrampa requieren después un servicio externo; no forman parte de este paquete offline.
 
-## Componentes React
+## Capa visual React opcional
 
 ```jsx
-import { ProfileCard, XPProgress, BadgeGallery, MissionBoard } from './gamification/ui/index.js';
+import { ProfileCard, XPProgress, BadgeGallery, MissionBoard } from './gamification-ui/index.js';
 
 <ProfileCard user={usuario} config={config} />
 <XPProgress user={usuario} config={config} />
@@ -51,4 +51,4 @@ import { ProfileCard, XPProgress, BadgeGallery, MissionBoard } from './gamificat
 <MissionBoard user={usuario} config={config} onClaim={reclamar} />
 ```
 
-Se puede importar solo la API del motor desde `index.js` o solo los componentes React desde `ui/index.js`. La capa visual es opcional; una app puede presentar los datos con su propia interfaz.
+Los componentes React están separados en `gamification-ui/`, fuera de `src/gamification/`. Importa `gamification-ui/base.css` si quieres usar el estilo del playground o aplica tus propios estilos. También puedes importar solo la API lógica desde `src/gamification/index.js`; una app puede presentar los datos con su propia interfaz.

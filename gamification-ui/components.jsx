@@ -1,14 +1,13 @@
 import React from 'react';
-import defaultConfig from '../gamification.config.js';
-import { listarBadges } from '../badges.js';
-import { progresoLiga } from '../leagues.js';
-import { progresoNivel } from '../progression.js';
-import { calcularRacha } from '../streaks.js';
-import { listarMascotas } from '../pets.js';
-import { listarSaldos } from '../wallet.js';
-import { listarMisiones } from '../missions.js';
-import { obtenerEstadoTemporada } from '../seasons.js';
-import { AvatarPicker } from '../avatar.js';
+import defaultConfig from '../src/gamification/gamification.config.js';
+import { listarBadges } from '../src/gamification/badges.js';
+import { progresoLiga } from '../src/gamification/leagues.js';
+import { progresoNivel } from '../src/gamification/progression.js';
+import { calcularRacha } from '../src/gamification/streaks.js';
+import { listarMascotas } from '../src/gamification/pets.js';
+import { listarSaldos } from '../src/gamification/wallet.js';
+import { listarMisiones } from '../src/gamification/missions.js';
+import { obtenerEstadoTemporada } from '../src/gamification/seasons.js';
 
 const card = 'gf-card';
 
@@ -67,5 +66,3 @@ export function RewardToast({ reward, onClose }) {
   if (!reward) return null;
   return <div className="gf-toast" role="status"><span>{reward.icono || '✨'}</span><strong>{reward.titulo || 'Recompensa obtenida'}</strong><span>{reward.descripcion || ''}</span><button type="button" onClick={onClose} aria-label="Cerrar">×</button></div>;
 }
-
-export { AvatarPicker };

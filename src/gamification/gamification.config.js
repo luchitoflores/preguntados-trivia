@@ -14,6 +14,36 @@ const gamificationConfig = {
   },
   limites: { xpMinimo: 0, diasMinimo: 0 },
   valores: { incremento: 1 },
+  temas: [
+    { id: 'metafisica', nombre: 'Metafísica' },
+    { id: 'etica', nombre: 'Ética' },
+    { id: 'logica', nombre: 'Lógica' },
+  ],
+  estadisticas: {
+    rangosHorario: [
+      { id: 'manana', nombre: 'Mañana', horaDesde: 6, horaHasta: 12 },
+      { id: 'tarde', nombre: 'Tarde', horaDesde: 12, horaHasta: 19 },
+      { id: 'noche', nombre: 'Noche', horaDesde: 19, horaHasta: 6 },
+    ],
+  },
+  simulacion: {
+    diasMaximos: 90,
+    xpMaximoPorOperacion: 100000,
+    toastMilisegundos: 2600,
+    ruedaId: 'playground',
+    accionRueda: 'jugar-rueda',
+  },
+  controlesUI: {
+    parametrosBadge: {
+      horaDesde: { nombre: 'Hora inicial', control: 'hora' },
+      horaHasta: { nombre: 'Hora final', control: 'hora' },
+      accion: { nombre: 'Acción', control: 'texto' },
+      vecesNecesarias: { nombre: 'Veces necesarias', control: 'numero', minimo: 1 },
+      diasNecesarios: { nombre: 'Días necesarios', control: 'numero', minimo: 1 },
+      coronasNecesarias: { nombre: 'Coronas necesarias', control: 'numero', minimo: 1 },
+      xpMinimoEnUnDia: { nombre: 'XP en un día', control: 'numero', minimo: 1 },
+    },
+  },
   perfil: { nombreInicial: '', trajeInicial: null, mascotaInicial: null },
   errores: {
     idRequerido: 'Se requiere un identificador de usuario.',

@@ -9,7 +9,8 @@ export default defineConfig({
     rolldownOptions: {
       input: {
         game: resolve(process.cwd(), 'index.html'),
-        gamification: resolve(process.cwd(), 'gamification-demo.html'),
+        gamification: resolve(process.cwd(), 'playground/index.html'),
+        legacyGamification: resolve(process.cwd(), 'gamification-demo.html'),
       },
     },
   },
