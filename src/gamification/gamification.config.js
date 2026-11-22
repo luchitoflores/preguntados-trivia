@@ -33,7 +33,7 @@ const gamificationConfig = {
     { id: 'diamante', nombre: 'Diamante', copa: '💎', minXP: 15000, maxXP: null, color: '#52c7d8' },
   ],
   badges: [
-    { id: 'nocturno', nombre: 'Filósofo Nocturno', icono: '🌙', descripcion: 'Juega en el horario nocturno indicado.', tipo: 'por-hora', parametro: { horaDesde: 22, horaHasta: 5, vecesNecesarias: 1 } },
+    { id: 'nocturno', nombre: 'Filósofo Nocturno', icono: '🌙', descripcion: 'Juega en el horario nocturno indicado.', tipo: 'por-hora', parametro: { horaDesde: 23, horaHasta: 5, vecesNecesarias: 2 } },
     { id: 'racha-7', nombre: 'Imparable', icono: '🔥', descripcion: 'Mantén la racha diaria indicada.', tipo: 'por-racha', parametro: { diasNecesarios: 7 } },
     { id: 'cazador-6', nombre: 'Cazador de coronas', icono: '👑', descripcion: 'Consigue la cantidad indicada de coronas.', tipo: 'por-coronas', parametro: { coronasNecesarias: 6 } },
     { id: 'ruleta-10', nombre: 'Viajero de la ruleta', icono: '🎡', descripcion: 'Repite una acción la cantidad indicada de veces.', tipo: 'por-repeticion', parametro: { accion: 'jugar-rueda', vecesNecesarias: 10 } },
