@@ -201,7 +201,7 @@ header span { font-size: .6rem; }
 .game { background: var(--skin-background, #f9f5ff); color: var(--skin-foreground, #30213a); }
 .game header { background: var(--skin-primary, #793db2); }
 .game .primary { background: var(--skin-primary, #793db2); }
-.skin-caverna .panel, .skin-existencial .panel, .skin-abismo .panel { color: #30213a; }
+.skin-caverna .panel, .skin-existencial .panel, .skin-abismo .panel { color: var(--skin-foreground, #fff); }
 
 /* Editor local: solo aparece después de autenticar el hash oculto. */
 .admin-shell { min-height: 100dvh; padding: 22px max(16px, calc((100vw - 980px) / 2)); background: #f4effa; color: #30213a; }
