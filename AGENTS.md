@@ -364,3 +364,11 @@ En `libapp.so` se encontraron un módulo `question_powerups`, servicios de inven
 - `philosopher-explanations.js` aporta una explicación conceptual por eje y la conecta con la respuesta correcta de cada pregunta de los ocho autores. Cubre las 384 preguntas y los bancos que reutiliza la ruleta general.
 - `Explanation` en `src.jsx` conserva las explicaciones existentes para el banco general y, cuando la pregunta es de autor, muestra el contenido nuevo bajo «¿Por qué?». Se comparte entre partida y estudio.
 - Conteo de cobertura: 384 preguntas únicas, cero sin explicación. `npm run build` correcto. La lectura de campañas antiguas presenta un aviso en la sesión de revisión; esa incidencia queda pendiente de aislar.
+
+## Legibilidad universal de las ruletas · 2026-11-22
+
+- Inventario estático de `src/core/wheels.js`: 11 registros (Ejes, Platón, Sartre, Nietzsche, Kant, Camus, Hegel, Heidegger, Roig, Dussel y Zea). `src.jsx` añade la ruleta general de ocho filósofos y obtiene los sectores temáticos de `questions.js` y `philosophers.js`; se encontraron seis ejes generales y seis sectores por cada uno de los ocho autores jugables.
+- `style.css` sustituye el texto radial y el truncamiento por etiquetas horizontales con compensación de la rotación del disco, icono blanco en círculo oscuro, borde blanco de 6 px, sombra y marco de `min(86vw, 320px)`. La piel conserva el color principal del encabezado y del botón. La flecha superior se eleva sobre las etiquetas.
+- `src/core/wheels.js` define dos paletas de seis tonos distintos (para piel clara y versión más luminosa de las pieles oscuras), iconos temáticos sin duplicados dentro de cada ruleta y ocho iconos distintos para la ruleta general de autores. `src.jsx` conserva el ángulo, transición y cálculo del giro; solo cambia la composición y ubicación de las etiquetas.
+- Verificación estática: seis sectores/seis iconos únicos en Ejes y en las ocho ruletas individuales; ocho autores/ocho iconos únicos en la general; seis colores registrados por rueda. `npm run build` finaliza correctamente.
+- QA visual pendiente: la vista local no se abrió en CUA porque el puerto del entorno de código no es accesible desde el navegador y la política del navegador bloquea `file://`. No se afirma haber capturado ni inspeccionado visualmente las diez vistas.

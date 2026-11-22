@@ -17,7 +17,7 @@ import { reviewBank } from './review-bank.js';
 import { sartreTopics } from './sartre.js';
 import { philosopherData, philosopherByKey, philosopherRouletteTopics } from './philosophers.js';
 import { philosopherExplanation } from './philosopher-explanations.js';
-import { wheels } from './src/core/wheels.js';
+import { getPhilosopherWheelIcon, getWheelSectorIcon, wheels } from './src/core/wheels.js';
 import { philosophersRegistry } from './src/core/philosophers-registry.js';
 import { themes } from './src/core/themes.js';
 import { adaptLegacyQuestion } from './src/core/adaptador.js';
@@ -592,6 +592,8 @@ function App() {
   const activeWheel = wheels[selectedWheel] || wheels.ejes;
   const activeTheme = themes[activeWheel.skin] || themes['skin-ejes'];
   const activeWheelFill = activeTopics.map(([, , color], i) => (activeWheel.colores?.[i % activeWheel.colores.length] || color) + ' ' + i * activeSector + 'deg ' + (i + 1) * activeSector + 'deg').join(', ');
+  const wheelIconsUsed = new Set();
+  const wheelDiameter = Math.min(window.innerWidth * .86, 320);
   const [prompt, options, correct, topic, questionMeta, customExplanation] = state.replacements?.[index] ?? questions[index] ?? [];
   const topicIndex = activeTopics.findIndex(([name]) => name === topic);
   const TopicIcon = sectorIcons[topicIndex];
@@ -699,10 +701,16 @@ function App() {
             <div className="wheel" aria-hidden="true" style={{ background: 'conic-gradient(' + activeWheelFill + ')', transform: 'rotate(' + state.angle + 'deg)' }}>
               {activeTopics.map(([name, short], i) => {
                 const author = state.mode === 'philosopher-roulette' ? philosophers.find(item => item.name === name) : null;
-                const Icon = (author && philosophersRegistry[author.key]?.icon) || activeWheel.icono || sectorIcons[i % sectorIcons.length];
-                return <span key={name} aria-label={name} style={{ transform: 'rotate(' + ((i + .5) * activeSector) + 'deg) translateY(-82px) rotate(90deg)', color: activeWheel.colores?.[1] || '#f59e0b' }}>
-                  <Icon size={activeTopics.length > 6 ? 18 : 25} />
-                  <small>{short}</small>
+                const Icon = author
+                  ? getPhilosopherWheelIcon(author.key, wheelIconsUsed)
+                  : getWheelSectorIcon(name, i, wheelIconsUsed);
+                const labelAngle = ((i + .5) * activeSector - 90) * Math.PI / 180;
+                const labelRadius = 0.32 * wheelDiameter;
+                const labelX = Math.cos(labelAngle) * labelRadius;
+                const labelY = Math.sin(labelAngle) * labelRadius;
+                return <span key={name} className="wheel-sector-label" aria-label={name} title={name} style={{ left: `calc(50% + ${labelX}px)`, top: `calc(50% + ${labelY}px)`, '--counter-angle': `${-state.angle}deg` }}>
+                  <span className="wheel-sector-icon"><Icon /></span>
+                  <small>{short || name}</small>
                 </span>;
               })}
             </div>
