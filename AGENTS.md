@@ -372,3 +372,10 @@ En `libapp.so` se encontraron un módulo `question_powerups`, servicios de inven
 - `src/core/wheels.js` define dos paletas de seis tonos distintos (para piel clara y versión más luminosa de las pieles oscuras), iconos temáticos sin duplicados dentro de cada ruleta y ocho iconos distintos para la ruleta general de autores. `src.jsx` conserva el ángulo, transición y cálculo del giro; solo cambia la composición y ubicación de las etiquetas.
 - Verificación estática: seis sectores/seis iconos únicos en Ejes y en las ocho ruletas individuales; ocho autores/ocho iconos únicos en la general; seis colores registrados por rueda. `npm run build` finaliza correctamente.
 - QA visual pendiente: la vista local no se abrió en CUA porque el puerto del entorno de código no es accesible desde el navegador y la política del navegador bloquea `file://`. No se afirma haber capturado ni inspeccionado visualmente las diez vistas.
+
+## Framework reusable de gamificación · 2026-11-22
+
+- Se creó `src/gamification/` como módulo desacoplado del estado de Preguntados. `gamification.config.js` es el catálogo editable de ligas, badges, umbrales, horas, textos, eventos, desbloqueos, trajes, mascotas, calendario, persistencia y valores base.
+- `engine.js` procesa eventos y reconstruye las estadísticas; `badges.js` recorre la configuración con evaluadores genéricos para hora, racha, coronas, repetición y XP diaria. `streaks.js`, `stats.js` y `leagues.js` calculan datos derivados. `avatar.js` exporta `AvatarPicker`, que itera la configuración y persiste el traje seleccionado. `pets.js` mantiene mascotas coleccionables sin poder.
+- No se conectó todavía el motor al ciclo de partidas de la app: sigue siendo una biblioteca reusable, con contrato de eventos en `src/gamification/README.md`.
+- Se ejecutó compilación de producción. La verificación solicitada ajustó temporalmente el badge nocturno a las 23:00 y dos usos, y añadió el traje de prueba en una copia de config; ambos cambios se reflejaron usando el motor y el mapeo dinámico de `AvatarPicker`. No son cambios persistidos en el catálogo de producción.
