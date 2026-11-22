@@ -394,7 +394,7 @@ function Study({ onExit, onMode }) {
     setScore(0);
   }
   return (
-    <main className="game has-mode-bar">
+    <main className={`game ${group === null ? 'has-mode-bar' : ''}`}>
       <header><div><span>APRENDE JUGANDO</span><div className="subject-title"><strong>Filosofía</strong>{group !== null && <span className="header-topic" title={topics[group][0]}>{topics[group][1]}</span>}</div></div><SoundButton /></header>
       <section className="panel">
         <button className="secondary study-back" onClick={group === null ? onExit : () => selectGroup(null)}>{group === null ? 'Volver al inicio' : 'Elegir otro tema'}</button>
@@ -431,13 +431,13 @@ function Study({ onExit, onMode }) {
           </>
         )}
       </section>
-      <ModeBar onInitial={() => onMode('initial')} onAxes={() => onMode('axes')} onAuthor={() => onMode('philosophers')} onPhilosopher={() => onMode('philosopher-roulette')} />
+      {group === null && <ModeBar onInitial={() => onMode('initial')} onAxes={() => onMode('axes')} onAuthor={() => onMode('philosophers')} onPhilosopher={() => onMode('philosopher-roulette')} />}
     </main>
   );
 }
 
 function PhilosopherPicker({ onChoose, onMode }) {
-  return <main className="game has-mode-bar">
+  return <main className="game">
     <header><div><span>APRENDE JUGANDO</span><div className="subject-title"><strong>Filósofos</strong></div></div><SoundButton /></header>
     <section className="panel philosopher-picker">
       <h1>Elige un filósofo</h1>
@@ -456,7 +456,6 @@ function PhilosopherPicker({ onChoose, onMode }) {
         })}
       </div>
     </section>
-    <ModeBar onInitial={() => onMode('initial')} onAxes={() => onMode('axes')} onAuthor={() => onMode('philosophers')} onPhilosopher={() => onMode('philosopher-roulette')} />
   </main>;
 }
 
@@ -619,7 +618,7 @@ function App() {
   if (studying) return <Study onExit={() => { setStudying(false); setHome(true); }} onMode={openMode} />;
   if (showPhilosophers) return <PhilosopherPicker onChoose={openMode} onMode={openMode} />;
   return (
-    <main className={`game has-mode-bar ${activeWheel.skin}`} style={{ '--skin-background': activeTheme.fondo, '--skin-primary': activeTheme.primario, '--skin-foreground': activeTheme.texto, '--skin-wheel': activeTheme.colorRueda }}>
+    <main className={`game ${landing ? 'has-mode-bar' : ''} ${activeWheel.skin}`} style={{ '--skin-background': activeTheme.fondo, '--skin-primary': activeTheme.primario, '--skin-foreground': activeTheme.texto, '--skin-wheel': activeTheme.colorRueda }}>
       <header><div className="header-brand">{!landing && phase === 'wheel' && <button className="home-button" onClick={() => { send('pause'); setHome(true); }}><ArrowLeft size={20} /><span>Inicio</span></button>}{!landing && phase === 'question' && <button className="home-button" onClick={() => { send('pause'); setConfirmExit(true); }}><ArrowLeft size={20} /><span>Atrás</span></button>}<div><span>APRENDE JUGANDO</span><div className="subject-title"><strong>Filosofía</strong>{!landing && ['topic', 'question', 'offer', 'feedback'].includes(phase) && topicIndex >= 0 && <span className="header-topic" title={topic}>{activeTopics[topicIndex][1]}</span>}</div></div></div><SoundButton /></header>
       {saveError && <div className="save-warning" role="alert">{saveError}<button className="secondary" onClick={() => commitLibrary(libraryRef.current)}>Reintentar guardado</button></div>}
       {campaignModal === 'list' && <ResultDialog key="campaign-list" title="Mis campañas" icon={Layers} onCancel={() => setCampaignModal(null)}>
@@ -765,7 +764,7 @@ function App() {
           </ResultDialog>}
         </section>
       )}
-      <ModeBar onInitial={() => openMode('initial')} onAxes={() => openMode('axes')} onAuthor={() => openMode('philosophers')} onPhilosopher={() => openMode('philosopher-roulette')} />
+      {landing && <ModeBar onInitial={() => openMode('initial')} onAxes={() => openMode('axes')} onAuthor={() => openMode('philosophers')} onPhilosopher={() => openMode('philosopher-roulette')} />}
     </main>
   );
 }
