@@ -51,6 +51,11 @@ const gamificationConfig = {
     monedasInsuficientes: 'No hay saldo suficiente para esa operación.',
     operacionMonedasInvalida: 'La moneda o la cantidad indicada no son válidas.',
     misionNoDisponible: 'La misión no está completa o ya fue reclamada.',
+    articuloNoDisponible: 'Ese artículo no está disponible en la tienda o no tienes unidades.',
+    articuloYaComprado: 'Ese artículo ya forma parte de tu colección.',
+    efectoNoDisponible: 'El efecto de ese artículo no está configurado en el motor.',
+    rachaNoCongelable: 'El congelador solo protege el día perdido inmediatamente anterior a hoy.',
+    recompensaTemporadaNoDisponible: 'Ese tramo no ha sido alcanzado o su premio ya fue reclamado.',
   },
   eventos: {
     xp: 'xp-ganado',
@@ -63,8 +68,11 @@ const gamificationConfig = {
     monedaGanada: 'moneda-ganada',
     monedaGastada: 'moneda-gastada',
     misionReclamada: 'mision-reclamada',
+    articuloComprado: 'articulo-comprado',
+    congeladorUsado: 'congelador-usado',
+    temporadaReclamada: 'temporada-recompensa-reclamada',
   },
-  monedas: [{ id: 'gemas', nombre: 'Gemas', icono: '💎', color: '#5bc7d5' }],
+  monedas: [{ id: 'diamantes', nombre: 'Diamantes', icono: '💎', color: '#5bc7d5' }],
   niveles: [
     { id: 'nivel-1', nombre: 'Aprendiz', nivel: 1, minXP: 0, maxXP: 249 },
     { id: 'nivel-2', nombre: 'Pensador', nivel: 2, minXP: 250, maxXP: 749 },
@@ -85,27 +93,56 @@ const gamificationConfig = {
     { id: 'mejor-dia-500', nombre: 'Día brillante', icono: '☀️', descripcion: 'Alcanza la meta diaria de XP.', tipo: 'por-xp-dia', parametro: { xpMinimoEnUnDia: 500 } },
   ],
   misiones: [
-    { id: 'primeras-ideas', nombre: 'Primeras ideas', descripcion: 'Responde correctamente a preguntas.', categoria: 'progreso', objetivo: { tipo: 'conteo-eventos', eventoKey: 'respuestaCorrecta', cantidadNecesaria: 3 }, recompensas: [{ tipo: 'xp', cantidad: 50 }, { tipo: 'moneda', monedaId: 'gemas', cantidad: 10 }] },
+    { id: 'primeras-ideas', nombre: 'Primeras ideas', descripcion: 'Responde correctamente a preguntas.', categoria: 'progreso', objetivo: { tipo: 'conteo-eventos', eventoKey: 'respuestaCorrecta', cantidadNecesaria: 3 }, recompensas: [{ tipo: 'xp', cantidad: 50 }, { tipo: 'moneda', monedaId: 'diamantes', cantidad: 10 }] },
     { id: 'gira-la-ruleta', nombre: 'Explora la ruleta', descripcion: 'Juega varias ruedas.', categoria: 'progreso', objetivo: { tipo: 'conteo-eventos', eventoKey: 'rueda', cantidadNecesaria: 5 }, recompensas: [{ tipo: 'xp', cantidad: 75 }] },
-    { id: 'coleccionista', nombre: 'Coleccionista de temas', descripcion: 'Gana coronas en distintos temas.', categoria: 'progreso', objetivo: { tipo: 'coronas', cantidadNecesaria: 3 }, recompensas: [{ tipo: 'moneda', monedaId: 'gemas', cantidad: 15 }] },
+    { id: 'coleccionista', nombre: 'Coleccionista de temas', descripcion: 'Gana coronas en distintos temas.', categoria: 'progreso', objetivo: { tipo: 'coronas', cantidadNecesaria: 3 }, recompensas: [{ tipo: 'moneda', monedaId: 'diamantes', cantidad: 15 }] },
   ],
   temporada: { id: 'temporada-inicial', nombre: 'Temporada de ideas', fechaInicio: '2026-01-01T00:00:00.000Z', fechaFin: null, reinicio: 'manual' },
+  temporadas: [
+    { id: 'temporada-inicial', nombre: 'Temporada de ideas', fechaInicio: '2026-01-01', fechaFin: '', niveles: [{ id: 'inicio', nombre: 'Inicio', xpNecesario: 0, recompensas: [{ tipo: 'moneda', monedaId: 'diamantes', cantidad: 5 }] }, { id: 'explorador', nombre: 'Explorador', xpNecesario: 250, recompensas: [{ tipo: 'moneda', monedaId: 'diamantes', cantidad: 20 }] }, { id: 'maestro', nombre: 'Maestro', xpNecesario: 750, recompensas: [{ tipo: 'moneda', monedaId: 'diamantes', cantidad: 50 }] }] },
+    { id: 'temporada-siguiente', nombre: 'Nueva temporada', fechaInicio: '2027-01-01', fechaFin: '', niveles: [{ id: 'inicio', nombre: 'Inicio', xpNecesario: 0, recompensas: [{ tipo: 'moneda', monedaId: 'diamantes', cantidad: 5 }] }, { id: 'explorador', nombre: 'Explorador', xpNecesario: 250, recompensas: [{ tipo: 'moneda', monedaId: 'diamantes', cantidad: 20 }] }, { id: 'maestro', nombre: 'Maestro', xpNecesario: 750, recompensas: [{ tipo: 'moneda', monedaId: 'diamantes', cantidad: 50 }] }] },
+  ],
   recompensas: { limiteEventosGuardados: 5000, idPrefijoGenerado: 'gam-' },
   trajes: [
     { id: 'toga', nombre: 'Toga clásica', imagen: '🏛️', seDesbloqueaCon: 'liga-bronce', costoGemas: 0 },
     { id: 'laureles', nombre: 'Laureles', imagen: '🌿', seDesbloqueaCon: 'badge-nocturno', costoGemas: 0 },
-    { id: 'sabio', nombre: 'Sabio de oro', imagen: '🦉', seDesbloqueaCon: 'xp-1000', costoGemas: 100 },
+    { id: 'sabio', nombre: 'Sabio de oro', imagen: '🦉', seDesbloqueaCon: 'compra-sabio', costoGemas: 100 },
   ],
   // Colección sin poderes. poder: null queda reservado para TODO v4.
   mascotas: [
     { id: 'buho', nombre: 'Búho', imagen: '🦉', seDesbloqueaCon: 'liga-bronce', poder: null },
     { id: 'zorro', nombre: 'Zorro', imagen: '🦊', seDesbloqueaCon: 'badge-racha-7', poder: null },
   ],
+  catalogos: {
+    // Ruedas y sectores sirven para registrar contexto de actividad. El motor no depende de una ruleta concreta.
+    ruedas: [
+      { id: 'ejes', nombre: 'Ejes temáticos', icono: '🧭', temas: ['Antigua y medieval', 'Filosofía moderna', 'Filosofía contemporánea', 'Filosofía latinoamericana', 'Lógica y ética', 'Conocimiento y verdad'] },
+      { id: 'platon', nombre: 'Ruleta · Platón', icono: '🏛️', temas: ['Caverna', 'Doxa', 'Ideas'] },
+      { id: 'sartre', nombre: 'Ruleta · Sartre', icono: '👻', temas: ['Libertad', 'Existencia'] },
+      { id: 'nietzsche', nombre: 'Ruleta · Nietzsche', icono: '💀', temas: ['Superhombre', 'Voluntad'] },
+      { id: 'kant', nombre: 'Ruleta · Kant', icono: '⚖️', temas: ['Razón', 'Deber', 'Crítica'] },
+      { id: 'camus', nombre: 'Ruleta · Camus', icono: '⌛', temas: ['Absurdo', 'Rebelión'] },
+      { id: 'hegel', nombre: 'Ruleta · Hegel', icono: '🔄', temas: ['Dialéctica', 'Espíritu'] },
+      { id: 'heidegger', nombre: 'Ruleta · Heidegger', icono: '🌳', temas: ['Ser', 'Dasein'] },
+      { id: 'roig', nombre: 'Ruleta · Arturo Andrés Roig', icono: '👥', temas: ['A priori antropológico', 'Liberación'] },
+      { id: 'dussel', nombre: 'Ruleta · Enrique Dussel', icono: '🤝', temas: ['Ética de la liberación', 'Exterioridad'] },
+      { id: 'zea', nombre: 'Ruleta · Leopoldo Zea', icono: '🌎', temas: ['Identidad', 'Filosofía latinoamericana'] },
+      { id: 'filosofos', nombre: 'Ruleta general de filósofos', icono: '🧠', temas: ['Sartre', 'Nietzsche', 'Camus', 'Hegel', 'Heidegger', 'Roig', 'Dussel', 'Zea'] },
+    ],
+  },
+  tienda: {
+    articulos: [
+      { id: 'sabio', nombre: 'Traje Sabio de oro', descripcion: 'Añade un traje a tu colección.', tipo: 'cosmetico', efecto: 'desbloquear-traje', trajeId: 'sabio', costo: 100, monedaId: 'diamantes', imagen: '🦉' },
+      { id: 'congelador-racha', nombre: 'Congelador de racha', descripcion: 'Protege un día sin actividad para conservar la racha.', tipo: 'consumible', efecto: 'congelar-racha', costo: 25, monedaId: 'diamantes', imagen: '🧊' },
+      { id: 'aureola', nombre: 'Aureola dorada', descripcion: 'Personalización visual de prueba.', tipo: 'cosmetico', efecto: 'cosmetico', costo: 40, monedaId: 'diamantes', imagen: '✨' },
+    ],
+  },
   reglasDesbloqueo: [
     { prefijo: 'liga-', tipo: 'liga-minima' },
     { prefijo: 'corona-', tipo: 'corona' },
     { prefijo: 'badge-', tipo: 'badge' },
     { prefijo: 'xp-', tipo: 'xp-minimo' },
+    { prefijo: 'compra-', tipo: 'articulo-comprado' },
   ],
   interfaz: {
     tituloTrajes: 'Trajes de avatar',
@@ -113,7 +150,7 @@ const gamificationConfig = {
     seleccionado: 'Seleccionado',
     bloqueado: 'Bloqueado',
     desbloqueaCon: 'Se desbloquea con',
-    costoGemas: 'Gemas',
+    costoGemas: 'Diamantes',
     nivel: 'Nivel',
     xp: 'XP',
     saldo: 'Saldo',

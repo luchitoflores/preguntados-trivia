@@ -38,6 +38,8 @@ export function calcularEstadisticas(eventos = [], config = defaultConfig) {
     const day = fechaLocal(event.timestamp, config);
     const hour = String(horaLocal(event.timestamp, config));
     if (Object.values(config.eventos).includes(event.tipo)) days.add(day);
+    // Un congelador conserva el día protegido dentro de la secuencia de actividad.
+    if (event.tipo === config.eventos.congeladorUsado && /^\d{4}-\d{2}-\d{2}$/.test(event.diaProtegido || '')) days.add(event.diaProtegido);
 
     if (event.tipo === config.eventos.xp) {
       const parsedAmount = Number(event.cantidad);

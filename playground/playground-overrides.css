@@ -1,0 +1,2 @@
+.character.has-customization:before{content:"";position:absolute;inset:-8px;border:3px solid #ffd45c;border-radius:50%;box-shadow:0 0 16px #efbd45aa;pointer-events:none}
+.season-level button{border:0;border-radius:8px;background:#8052dd;color:white;padding:4px 6px;font-size:.55rem;font-weight:800;white-space:nowrap}.season-level button:disabled{background:#ece7f0;color:#847990}

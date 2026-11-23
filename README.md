@@ -24,3 +24,7 @@ Cada push a `main` ejecuta la compilación Android. Ve a Actions → último run
 Las preguntas del framework se pueden importar o exportar como JSON. Las preguntas creadas en el editor se guardan localmente en el navegador y los medios se almacenan como base64 en el mismo dispositivo.
 
 Modo admin disponible bajo solicitud.
+
+## Framework de gamificación
+
+El [playground de gamificación](https://luchitoflores.github.io/preguntados-trivia/playground/) permite simular el progreso sin afectar partidas. Usa la rueda dentada para cambiar reglas, temporadas, ruedas y tienda; el panel principal sirve para ejecutar las pruebas y ver resultados. El perfil de prueba se guarda en este dispositivo.

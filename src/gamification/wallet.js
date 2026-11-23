@@ -12,3 +12,12 @@ export function obtenerSaldo(user, monedaId, config = defaultConfig) {
 export function listarSaldos(user, config = defaultConfig) {
   return config.monedas.map(moneda => ({ ...moneda, saldo: obtenerSaldo(user, moneda.id, config) }));
 }
+
+export function obtenerInventario(user, config = defaultConfig) {
+  const inventory = Object.fromEntries((config.tienda?.articulos || []).map(item => [item.id, config.limites.diasMinimo]));
+  for (const event of user?.eventos || []) {
+    if (event.tipo === config.eventos.articuloComprado && Object.hasOwn(inventory, event.articuloId)) inventory[event.articuloId] += config.valores.incremento;
+    if (event.tipo === config.eventos.congeladorUsado && Object.hasOwn(inventory, event.articuloId)) inventory[event.articuloId] = Math.max(config.limites.diasMinimo, inventory[event.articuloId] - config.valores.incremento);
+  }
+  return inventory;
+}

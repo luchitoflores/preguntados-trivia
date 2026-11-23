@@ -6,7 +6,7 @@ Paquete JavaScript independiente del juego Preguntados. Incluye reglas por confi
 
 El playground se publica junto al juego en `https://luchitoflores.github.io/preguntados-trivia/playground/`. La página antigua `/gamification-demo.html` redirige allí. Los controles de configuración y simulación viven en `playground/` y envían eventos al motor; no implementan reglas de recompensas.
 
-La página de prueba usa una clave local independiente, guarda sus parámetros/progreso en el dispositivo y no cambia el almacenamiento de la partida. El diseño es una sola vista vertical con panel de parámetros, simulador y resultados en vivo; no se añade al menú ni al flujo del juego.
+La página de prueba usa una clave local independiente, guarda sus parámetros/progreso en el dispositivo y no cambia el almacenamiento de la partida. La pantalla principal muestra acciones y progreso; la rueda dentada abre la configuración. El simulador permite probar las ruedas del juego y sus sectores, objetivos de liga/nivel, temporadas y sus recompensas, mascotas, tienda y racha congelada.
 
 ## Inicio
 
@@ -30,9 +30,9 @@ Cada evento debe tener ID estable cuando el anfitrión pueda reintentarlo. El mo
 
 ## Configuración y extensibilidad
 
-Edita `gamification.config.js` para cambiar niveles, ligas, insignias, objetivos de misión, premios, temporada, monedas, trajes, mascotas, desbloqueos, textos, calendario y límites. Los tipos de condición de badges y los objetivos de misión son mecánicas del motor; sus umbrales y contenidos son datos. Usa `config.eventos` como catálogo de tipos de evento. Para nuevas reglas de dominio, añade un evaluador genérico reutilizable en su módulo, sin acoplarlo a una aplicación.
+Edita `gamification.config.js` para cambiar niveles, ligas, insignias, objetivos de misión, premios, temporadas, ruedas de contexto, monedas, tienda, trajes, mascotas, desbloqueos, textos, calendario y límites. Los tipos de condición de badges y los objetivos de misión son mecánicas del motor; sus umbrales y contenidos son datos. Usa `config.eventos` como catálogo de tipos de evento. Para nuevas reglas de dominio, añade un evaluador genérico reutilizable en su módulo, sin acoplarlo a una aplicación.
 
-Los trajes y mascotas se generan recorriendo configuración. Las mascotas son coleccionables sin poderes. El coste de traje se expone como dato; la compra debe ser llamada explícitamente por la aplicación anfitriona mediante el módulo monedero y su propio flujo de confirmación.
+Los trajes y mascotas se generan recorriendo configuración. Las mascotas son coleccionables sin poderes y `seleccionarMascota` permite equiparlas. `comprarArticulo` valida el saldo y registra compra; `usarArticulo` procesa efectos consumibles declarados en la tienda. El efecto `congelar-racha` conserva un día perdido y consume una unidad del artículo. `seleccionarPersonalizacion` equipa cosméticos ya adquiridos. `reclamarRecompensaTemporada` entrega hitos de temporada una sola vez; los XP de temporada pueden asociarse a su temporada con el campo `temporadaId` del evento.
 
 ## Persistencia y temporadas
 

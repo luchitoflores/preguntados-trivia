@@ -69,6 +69,7 @@ export function estaDesbloqueado(requisito, user, config = defaultConfig) {
     if (rule.tipo === 'corona') return Boolean(user?.stats?.coronasPorRueda?.[value] || user?.stats?.coronasPorTema?.[value]);
     if (rule.tipo === 'badge') return (user?.badges || []).includes(value);
     if (rule.tipo === 'xp-minimo') return (Number(user?.xp) || config.limites.xpMinimo) >= Number(value);
+    if (rule.tipo === 'articulo-comprado') return (user?.eventos || []).some(event => event.tipo === config.eventos.articuloComprado && event.articuloId === value);
     return false;
   }
   return false;
