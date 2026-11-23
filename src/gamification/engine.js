@@ -21,7 +21,7 @@ export function crearUsuario({ id = globalThis.crypto?.randomUUID?.(), nombre } 
 
 function actualizarDerivados(user, referencia, config) {
   const stats = calcularEstadisticas(user.eventos, config);
-  const streak = calcularRacha(stats.diasActivos, referencia, config);
+  const streak = calcularRacha(stats.diasParaRacha || stats.diasActivos, referencia, config);
   stats.rachaActual = streak.actual;
   stats.mejorRacha = streak.mejor;
   stats.saldos = Object.fromEntries(config.monedas.map(money => [money.id, obtenerSaldo(user, money.id, config)]));
@@ -84,7 +84,12 @@ export function guardarUsuario(user, storage = globalThis.localStorage, config =
 export function cargarUsuario(storage = globalThis.localStorage, config = defaultConfig) {
   const saved = storage?.getItem(config.persistencia.claveUsuario);
   if (!saved) return null;
-  try { return migrarUsuario(JSON.parse(saved), config); } catch { return null; }
+  try {
+    const loaded = migrarUsuario(JSON.parse(saved), config);
+    const updated = actualizarDerivados(loaded, new Date(), config);
+    const { badgesNuevos, ...normalized } = updated;
+    return normalized;
+  } catch { return null; }
 }
 
 export function agregarXP(user, cantidad, config = defaultConfig, meta = {}) {

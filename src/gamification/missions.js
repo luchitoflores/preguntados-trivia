@@ -1,37 +1,41 @@
 import defaultConfig from './gamification.config.js';
-import { procesarEvento } from './engine.js';
+import { fechaLocal } from './stats.js';
+import { obtenerClavePeriodo } from './calendar.js';
+import { reclamarRecompensas } from './rewards.js';
 
-function getProgress(mission, user, config) {
-  const objective = mission.objetivo;
+function getMissionState(mission, user, config, reference) {
+  const objective = mission.objetivo || {};
+  const periodicity = mission.periodicidad || 'total';
+  const periodKey = obtenerClavePeriodo(reference, periodicity, config);
+  const events = (user.eventos || []).filter(event => periodicity === 'total' || obtenerClavePeriodo(event.timestamp, periodicity, config) === periodKey);
   const required = Number(objective.cantidadNecesaria) || config.valores.incremento;
   let current = config.limites.diasMinimo;
+
   if (objective.tipo === 'conteo-eventos') {
     const eventType = config.eventos[objective.eventoKey];
-    current = (user.eventos || []).filter(event => event.tipo === eventType).length;
+    current = events.filter(event => event.tipo === eventType).length;
   } else if (objective.tipo === 'conteo-ruedas-distintas') {
-    current = new Set((user.eventos || []).filter(event => event.tipo === config.eventos.rueda).map(event => event.rueda).filter(Boolean)).size;
+    current = new Set(events.filter(event => event.tipo === config.eventos.rueda).map(event => event.rueda).filter(Boolean)).size;
   } else if (objective.tipo === 'xp-total') {
-    current = Number(user.xp) || config.limites.xpMinimo;
+    current = events.filter(event => event.tipo === config.eventos.xp).reduce((sum, event) => sum + (Number(event.cantidad) || config.limites.diasMinimo), config.limites.diasMinimo);
   } else if (objective.tipo === 'coronas') {
-    current = Number(user.stats?.coronas) || config.limites.diasMinimo;
+    current = events.filter(event => event.tipo === config.eventos.corona).length;
+  } else if (objective.tipo === 'dias-activos') {
+    const activityTypes = new Set((config.actividad?.eventosQueCuentan || []).map(key => config.eventos[key]).filter(Boolean));
+    current = new Set(events.filter(event => activityTypes.has(event.tipo)).map(event => fechaLocal(event.timestamp, config))).size;
   }
-  return { actual: Math.min(current, required), requerido: required, completada: current >= required };
+  const claimKey = `mision:${mission.id}:${periodKey}`;
+  const claimed = (user.eventos || []).some(event => event.tipo === config.eventos.recompensaReclamada && event.recompensaKey === claimKey)
+    || (periodicity === 'total' && (user.misionesReclamadas || []).includes(mission.id));
+  return { ...mission, periodo: periodKey, claveRecompensa: claimKey, progreso: { actual: Math.min(current, required), requerido: required, completada: current >= required }, reclamada: claimed };
 }
 
-export function listarMisiones(user, config = defaultConfig) {
-  const claims = new Set(user.misionesReclamadas || []);
-  return config.misiones.map(mission => ({ ...mission, progreso: getProgress(mission, user, config), reclamada: claims.has(mission.id) }));
+export function listarMisiones(user, config = defaultConfig, reference = new Date()) {
+  return (config.misiones || []).map(mission => getMissionState(mission, user, config, reference));
 }
 
-export function reclamarMision(user, missionId, config = defaultConfig) {
-  const mission = config.misiones.find(item => item.id === missionId);
-  const state = mission && listarMisiones(user, config).find(item => item.id === missionId);
-  if (!mission || !state?.progreso.completada || state.reclamada) throw new Error(config.errores.misionNoDisponible);
-  let updated = { ...user, misionesReclamadas: [...(user.misionesReclamadas || []), missionId] };
-  for (const [index, reward] of mission.recompensas.entries()) {
-    const id = `${config.recompensas.idPrefijoGenerado}mission-${missionId}-${index}`;
-    const type = reward.tipo === 'xp' ? config.eventos.xp : reward.tipo === 'moneda' ? config.eventos.monedaGanada : reward.tipo;
-    updated = procesarEvento(updated, { id, tipo: type, cantidad: reward.cantidad, monedaId: reward.monedaId, misionId: missionId }, config);
-  }
-  return updated;
+export function reclamarMision(user, missionId, config = defaultConfig, reference = new Date()) {
+  const mission = listarMisiones(user, config, reference).find(item => item.id === missionId);
+  if (!mission || !mission.progreso.completada || mission.reclamada) throw new Error(config.errores.misionNoDisponible);
+  return reclamarRecompensas(user, mission.claveRecompensa, mission.recompensas || [], config, new Date(reference).toISOString(), { misionId: missionId, periodo: mission.periodo });
 }

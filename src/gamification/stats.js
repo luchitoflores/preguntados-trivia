@@ -29,17 +29,24 @@ export function calcularEstadisticas(eventos = [], config = defaultConfig) {
     coronasPorRueda: {},
     coronasPorTema: {},
     diasActivos: [],
+    diasParaRacha: [],
+    diasConectadoAcumulados: config.limites.diasMinimo,
     vecesPorAccion: {},
   };
   const days = new Set();
+  const streakDays = new Set();
+  const activityTypes = new Set((config.actividad?.eventosQueCuentan || []).map(key => config.eventos[key]).filter(Boolean));
 
   for (const event of eventos) {
     if (!event?.timestamp || Number.isNaN(new Date(event.timestamp).getTime())) continue;
     const day = fechaLocal(event.timestamp, config);
     const hour = String(horaLocal(event.timestamp, config));
-    if (Object.values(config.eventos).includes(event.tipo)) days.add(day);
-    // Un congelador conserva el día protegido dentro de la secuencia de actividad.
-    if (event.tipo === config.eventos.congeladorUsado && /^\d{4}-\d{2}-\d{2}$/.test(event.diaProtegido || '')) days.add(event.diaProtegido);
+    if (activityTypes.has(event.tipo)) {
+      days.add(day);
+      streakDays.add(day);
+    }
+    // El congelador salva la secuencia de racha, pero no simula un día conectado.
+    if (event.tipo === config.eventos.congeladorUsado && /^\d{4}-\d{2}-\d{2}$/.test(event.diaProtegido || '')) streakDays.add(event.diaProtegido);
 
     if (event.tipo === config.eventos.xp) {
       const parsedAmount = Number(event.cantidad);
@@ -59,6 +66,8 @@ export function calcularEstadisticas(eventos = [], config = defaultConfig) {
   }
 
   stats.diasActivos = [...days].sort();
+  stats.diasParaRacha = [...streakDays].sort();
+  stats.diasConectadoAcumulados = stats.diasActivos.length;
   for (const [day, xp] of Object.entries(stats.xpPorDia)) {
     if (xp > stats.mejorDia.xp) stats.mejorDia = { fecha: day, xp };
   }

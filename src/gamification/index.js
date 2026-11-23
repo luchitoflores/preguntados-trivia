@@ -3,7 +3,7 @@ export { default as gamificationEngine, crearMotor, crearUsuario, procesarEvento
 export { revisarBadges, listarBadges } from './badges.js';
 export { calcularRacha } from './streaks.js';
 export { calcularEstadisticas, fechaLocal, horaLocal, obtenerHoraEnRango } from './stats.js';
-export { obtenerLiga, progresoLiga } from './leagues.js';
+export { obtenerLiga, progresoLiga, calcularLigaPersonal } from './leagues.js';
 export { listarMascotas, seleccionarMascota } from './pets.js';
 export { seleccionarTraje } from './avatar.js';
 export { obtenerNivel, progresoNivel } from './progression.js';
@@ -13,3 +13,7 @@ export { listarMisiones, reclamarMision } from './missions.js';
 export { crearTemporada, cargarTemporada, guardarTemporada, obtenerEstadoTemporada, listarTemporadas, calcularProgresoTemporada, reclamarRecompensaTemporada } from './seasons.js';
 export { crearAdaptadorLocal, crearAdaptadorMemoria } from './storage.js';
 export { migrarUsuario, migrarTemporada } from './migrations.js';
+export { obtenerCalendario, obtenerClavePeriodo, rangoPeriodo, listarPremiosMensuales, reclamarPremioMensual } from './calendar.js';
+export { listarHitosDias, reclamarHitoDias } from './milestones.js';
+export { listarColecciones, reclamarRecompensaColeccion } from './collections.js';
+export { reclamarRecompensas } from './rewards.js';

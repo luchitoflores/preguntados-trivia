@@ -1,12 +1,12 @@
 # Framework de gamificación
 
-Paquete JavaScript independiente del juego Preguntados. Incluye reglas por configuración, motor de eventos, progresión, estadísticas derivadas, ligas, insignias, rachas, misiones, monedas, temporada local, trajes y colección de mascotas. No requiere servidor ni APIs externas.
+Paquete JavaScript independiente de cualquier juego. `src/gamification/` contiene lógica JavaScript sin interfaz; `playground/` es un ejemplo visual con una configuración temática de Filosofía. No requiere servidor ni APIs externas.
 
 ## Vistas de componentes
 
 El playground se publica junto al juego en `https://luchitoflores.github.io/preguntados-trivia/playground/`. La página antigua `/gamification-demo.html` redirige allí. Los controles de configuración y simulación viven en `playground/` y envían eventos al motor; no implementan reglas de recompensas.
 
-La página de prueba usa una clave local independiente, guarda sus parámetros/progreso en el dispositivo y no cambia el almacenamiento de la partida. La pantalla principal muestra acciones y progreso; la rueda dentada abre la configuración. El simulador permite probar las ruedas del juego y sus sectores, objetivos de liga/nivel, temporadas y sus recompensas, mascotas, tienda y racha congelada.
+La página de prueba usa claves locales independientes y no cambia el almacenamiento de la partida. La pantalla principal muestra acciones y resultados; la rueda dentada abre los parámetros. Incluye pruebas de racha actual e histórica, hitos de días, calendario mensual, premios por mes perfecto y por puntos, misiones diarias/semanales, ligas personales con ascenso o descenso semanal, colecciones, niveles, temporadas, mascotas, tienda y ruedas. No muestra posiciones de otros jugadores.
 
 ## Inicio
 
@@ -30,25 +30,22 @@ Cada evento debe tener ID estable cuando el anfitrión pueda reintentarlo. El mo
 
 ## Configuración y extensibilidad
 
-Edita `gamification.config.js` para cambiar niveles, ligas, insignias, objetivos de misión, premios, temporadas, ruedas de contexto, monedas, tienda, trajes, mascotas, desbloqueos, textos, calendario y límites. Los tipos de condición de badges y los objetivos de misión son mecánicas del motor; sus umbrales y contenidos son datos. Usa `config.eventos` como catálogo de tipos de evento. Para nuevas reglas de dominio, añade un evaluador genérico reutilizable en su módulo, sin acoplarlo a una aplicación.
+`gamification.config.js` solo aporta valores neutros de respaldo. Para una app, define y pasa su propio objeto de configuración a `crearMotor(config)`. El archivo `playground/gamification.example.config.js` es una implementación de muestra con “Ideas”, filósofos, escuelas y reglas editables. Otra app puede sustituir esos datos por sus propias etapas, ligas, insignias, hitos, objetivos, colecciones, premios, monedas, tienda, avatar y etiquetas. El anfitrión traduce sus acciones a eventos estándar; el motor evalúa sus criterios sin conocer el tema del juego.
 
-Los trajes y mascotas se generan recorriendo configuración. Las mascotas son coleccionables sin poderes y `seleccionarMascota` permite equiparlas. `comprarArticulo` valida el saldo y registra compra; `usarArticulo` procesa efectos consumibles declarados en la tienda. El efecto `congelar-racha` conserva un día perdido y consume una unidad del artículo. `seleccionarPersonalizacion` equipa cosméticos ya adquiridos. `reclamarRecompensaTemporada` entrega hitos de temporada una sola vez; los XP de temporada pueden asociarse a su temporada con el campo `temporadaId` del evento.
+### Adaptar a otro juego
+
+1. Copia `playground/gamification.example.config.js` a la carpeta de configuración de tu aplicación.
+2. Cambia textos, etapas, ligas, monedas, hitos, condiciones, colecciones y premios para la temática y economía de ese juego.
+3. Crea el motor con `crearMotor(config)` y traduce sus acciones a los tipos de `config.eventos` con IDs estables.
+
+Los trajes y mascotas se generan recorriendo configuración. Las mascotas son coleccionables sin poderes y `seleccionarMascota` permite equiparlas. `comprarArticulo` valida saldo e inventario; `usarArticulo` procesa efectos declarados en la tienda. `reclamarRecompensas` centraliza premios idempotentes para misiones, hitos, medallas y colecciones. `obtenerCalendario` devuelve días conectados; `listarPremiosMensuales` y `reclamarPremioMensual` gestionan premios; `listarHitosDias` y `reclamarHitoDias` exponen metas acumuladas; `listarColecciones` y `reclamarRecompensaColeccion` gestionan colecciones. `calcularLigaPersonal` calcula ascenso o descenso a partir del XP del periodo y no simula rivales.
 
 ## Persistencia y temporadas
 
 `crearAdaptadorLocal()` usa localStorage; `crearAdaptadorMemoria()` sirve para pruebas, SSR o una aplicación que administre su estado en memoria. `crearMotor(config)` acepta configuración personalizada. Carga y guardado reciben un objeto compatible con Web Storage. `migrarUsuario` y `migrarTemporada` permiten registrar funciones de migración por versión sin acoplar el paquete a un proveedor externo.
 
-La temporada y los usuarios guardados por esta versión permanecen en el dispositivo. Las clasificaciones entre dispositivos, sincronización, autenticación, pagos y protección antitrampa requieren después un servicio externo; no forman parte de este paquete offline.
+Los perfiles y sus eventos pueden guardarse localmente o mediante un adaptador del anfitrión. Las ligas son individuales, basadas en metas de XP por periodo; no son una clasificación de personas. Clasificaciones en línea, sincronización, autenticación, pagos y protección antitrampa requieren después un servicio externo y quedan fuera del núcleo offline.
 
-## Capa visual React opcional
+## Separación visual
 
-```jsx
-import { ProfileCard, XPProgress, BadgeGallery, MissionBoard } from './gamification-ui/index.js';
-
-<ProfileCard user={usuario} config={config} />
-<XPProgress user={usuario} config={config} />
-<BadgeGallery user={usuario} config={config} />
-<MissionBoard user={usuario} config={config} onClaim={reclamar} />
-```
-
-Los componentes React están separados en `gamification-ui/`, fuera de `src/gamification/`. Importa `gamification-ui/base.css` si quieres usar el estilo del playground o aplica tus propios estilos. También puedes importar solo la API lógica desde `src/gamification/index.js`; una app puede presentar los datos con su propia interfaz.
+El motor no contiene HTML ni CSS. `playground/` demuestra una forma de usarlo y puede cambiarse sin tocar la lógica. Para integrarlo en Preguntados u otra app, importa las funciones desde `src/gamification/index.js`, conecta eventos del juego y diseña componentes visuales propios.
