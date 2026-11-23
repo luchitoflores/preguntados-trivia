@@ -33,7 +33,7 @@ export function calcularLigaPersonal(user, config = defaultConfig, reference = n
   }
 
   let leagueIndex = Math.max(config.limites.diasMinimo, ordered.findIndex(item => item.id === config.competenciaIndividual?.ligaInicialId));
-  const history = [];
+  const historial = [];
   const midday = config.calendario.horaReferencia * config.calendario.milisegundosPorHora;
   const end = new Date(rangoPeriodo(currentPeriod, period, config).inicio.getTime() + midday);
   let cursor = new Date(rangoPeriodo(firstPeriod, period, config).inicio.getTime() + midday);
@@ -44,7 +44,7 @@ export function calcularLigaPersonal(user, config = defaultConfig, reference = n
     const score = weeklyXP.get(key) || config.limites.diasMinimo;
     const promoted = config.competenciaIndividual.ascensoAutomatico && leagueIndex < ordered.length - config.valores.incremento && Number(league.xpParaAscender) > config.limites.diasMinimo && score >= league.xpParaAscender;
     const demoted = config.competenciaIndividual.descensoAutomatico && leagueIndex > config.limites.diasMinimo && score < Number(league.xpMinimoMantener || config.limites.diasMinimo);
-    history.push({ periodo: key, ligaId: league.id, xp: score, cambio: promoted ? 'ascenso' : demoted ? 'descenso' : 'sin-cambio' });
+    historial.push({ periodo: key, ligaId: league.id, xp: score, cambio: promoted ? 'ascenso' : demoted ? 'descenso' : 'sin-cambio' });
     if (promoted) leagueIndex += config.valores.incremento;
     else if (demoted) leagueIndex -= config.valores.incremento;
     if (period === 'diaria') cursor.setUTCDate(cursor.getUTCDate() + config.valores.incremento);
